@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace LogApi
 {
@@ -49,6 +48,11 @@ namespace LogApi
                     if (value == null)
                     {
                         value = new List<LogModel>();
+                    }
+
+                    if (value.Count > 100)
+                    {
+                        value.RemoveAt(0);
                     }
 
                     value.Add(new LogModel(
