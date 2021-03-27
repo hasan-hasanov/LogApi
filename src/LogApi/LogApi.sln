@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogApi", "LogApi\LogApi.csproj", "{E1EC566C-18D6-4153-933B-439B14182019}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1EC566C-18D6-4153-933B-439B14182019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1EC566C-18D6-4153-933B-439B14182019}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1EC566C-18D6-4153-933B-439B14182019}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1EC566C-18D6-4153-933B-439B14182019}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F1EBA3C-72B9-4C36-8FF4-36C379713E2B}
+	EndGlobalSection
+EndGlobal
