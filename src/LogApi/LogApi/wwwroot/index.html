@@ -30,14 +30,17 @@
                 const pathCell = row.insertCell(0);
                 pathCell.innerHTML = request.Path;
 
+                const queryStrings = [];
+                for (const [key, value] of Object.entries(request.QueryString)) {
+                    queryStrings.push(`${key}: ${value} <br/>`)
+                }
                 var queryStringCell = row.insertCell(1);
-                queryStringCell.innerHTML = request.QueryString;
+                queryStringCell.innerHTML = queryStrings.join("\r\n");
 
                 const headers = [];
                 for (const [key, value] of Object.entries(request.Headers)) {
                     headers.push(`${key}: ${value} <br/>`)
                 }
-
                 const headerCell = row.insertCell(2);
                 headerCell.innerHTML = headers.join("\r\n");
 

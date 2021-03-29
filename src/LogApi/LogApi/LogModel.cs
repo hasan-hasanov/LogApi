@@ -6,7 +6,7 @@ namespace LogApi
     {
         public LogModel(
             string path,
-            string queryString,
+            Dictionary<string, string> queryString,
             Dictionary<string, string> headers,
             Dictionary<string, string> cookies)
         {
@@ -18,7 +18,7 @@ namespace LogApi
 
         public string Path { get; }
 
-        public string QueryString { get; }
+        public Dictionary<string, string> QueryString { get; }
 
         public Dictionary<string, string> Headers { get; }
 

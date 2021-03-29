@@ -79,7 +79,7 @@ namespace LogApi
                     {
                         var logModel = new LogModel(
                                 context.Request.Path,
-                                context.Request.QueryString.ToString(),
+                                context.Request.Query.ToDictionary(k => k.Key, v => string.Join(",", v.Value)),
                                 context.Request.Headers.ToDictionary(k => k.Key, v => string.Join(", ", v.Value)),
                                 context.Request.Cookies.ToDictionary(k => k.Key, v => v.Value));
 
