@@ -28,31 +28,34 @@
                 const request = requests[i];
                 const row = requestTable.insertRow(0);
 
-                const pathCell = row.insertCell(0);
+                const sequenceCell = row.insertCell(0);
+                sequenceCell.innerHTML = requestTable.getElementsByTagName("tr").length;
+
+                const pathCell = row.insertCell(1);
                 pathCell.innerHTML = request.Path;
 
                 const queryStrings = [];
                 for (const [key, value] of Object.entries(request.QueryString)) {
                     queryStrings.push(`${key}: ${value} <br/>`)
                 }
-                var queryStringCell = row.insertCell(1);
+                var queryStringCell = row.insertCell(2);
                 queryStringCell.innerHTML = queryStrings.join("\r\n");
 
                 const headers = [];
                 for (const [key, value] of Object.entries(request.Headers)) {
                     headers.push(`${key}: ${value} <br/>`)
                 }
-                const headerCell = row.insertCell(2);
+                const headerCell = row.insertCell(3);
                 headerCell.innerHTML = headers.join("\r\n");
 
                 const cookies = [];
                 for (const [key, value] of Object.entries(request.Cookies)) {
                     cookies.push(`${key}: ${value} <br/>`)
                 }
-                const cookieCell = row.insertCell(3);
+                const cookieCell = row.insertCell(4);
                 cookieCell.innerHTML = cookies.join("\r\n");
 
-                const bodyCell = row.insertCell(4);
+                const bodyCell = row.insertCell(5);
                 bodyCell.innerHTML = request.Body;
             }
         }
@@ -93,6 +96,7 @@
         <caption>Table</caption>
         <thead>
             <tr>
+                <th>#</th>
                 <th>Path</th>
                 <th>Query String</th>
                 <th>Headers</th>
