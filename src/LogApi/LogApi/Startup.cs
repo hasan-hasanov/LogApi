@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -77,15 +78,22 @@ namespace LogApi
                     }
                     else
                     {
+                        string body = string.Empty;
+                        using (StreamReader stream = new StreamReader(context.Request.Body))
+                        {
+                            body = await stream.ReadToEndAsync();
+                        }
+
                         var logModel = new LogModel(
                                 context.Request.Path,
+                                body,
                                 context.Request.Query.ToDictionary(k => k.Key, v => string.Join(",", v.Value)),
                                 context.Request.Headers.ToDictionary(k => k.Key, v => string.Join(", ", v.Value)),
                                 context.Request.Cookies.ToDictionary(k => k.Key, v => v.Value));
 
                         _clientLogs.AddOrUpdate(Guid.NewGuid().ToString(), logModel, (key, value) => logModel);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS4014
                         Task.Run(async () =>
                         {
                             foreach (var webSocket in _webSockets)
@@ -102,7 +110,7 @@ namespace LogApi
                                 }
                             }
                         });
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning restore CS4014
 
                         await context.Response.WriteAsync("Success!");
                     }
