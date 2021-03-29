@@ -2,13 +2,19 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Log Api</title>
+    <meta charset="utf-8">
+    <title>Log Api</title>
 </head>
 
 <body>
-  <script>
-      alert("Test")
-  </script>
+    <script>
+        alert("hi");
+
+        var webSocket = new WebSocket("wss://localhost:44389/");
+
+        webSocket.onmessage = function (event) {
+            console.log(event.data);
+        }
+    </script>
 </body>
 </html>
