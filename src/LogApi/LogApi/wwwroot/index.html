@@ -14,35 +14,42 @@
             const requests = [];
             const message = JSON.parse(event.data);
 
-            if (message.length > 1) {
+            if (Array.isArray(message)) {
                 requests.push(...message);
             }
             else {
                 requests.push(message);
             }
 
-            const requestTable = document.getElementById("requestTable").getElementsByTagName('tbody')[0];
+            const requestTable = document.getElementById('tbody');
 
             for (var i = 0; i < requests.length; i++) {
-                console.log(requests[i]);
-
                 const request = requests[i];
                 const row = requestTable.insertRow();
 
                 const pathCell = row.insertCell(0);
-                pathCell.innerHtml = "AAAAAAAAAAAAA";
+                pathCell.innerHTML = request.Path;
 
-                const queryStringCell = row.insertCell(1);
-                queryStringCell.innerHtml = request.Path;
+                var queryStringCell = row.insertCell(1);
+                queryStringCell.innerHTML = request.QueryString;
+
+                const headers = [];
+                for (const [key, value] of Object.entries(request.Headers)) {
+                    headers.push(`${key}: ${value} <br/>`)
+                }
 
                 const headerCell = row.insertCell(2);
-                headerCell.innerHtml = request.Path;
+                headerCell.innerHTML = headers.join("\r\n");
 
+                const cookies = [];
+                for (const [key, value] of Object.entries(request.Cookies)) {
+                    cookies.push(`${key}: ${value} <br/>`)
+                }
                 const cookieCell = row.insertCell(3);
-                cookieCell.innerHtml = request.Path;
+                cookieCell.innerHTML = cookies.join("\r\n");
 
-                const bodyCell = row.insertCell(4);
-                bodyCell.innerHtml = request.Path;
+                //const bodyCell = row.insertCell(4);
+                //bodyCell.innerHtml = request.Path;
             }
         }
 
@@ -89,7 +96,7 @@
                 <th>Body</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tbody">
         </tbody>
     </table>
 </body>
