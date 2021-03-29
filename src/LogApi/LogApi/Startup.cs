@@ -48,23 +48,22 @@ namespace LogApi
 
             app.Run(async context =>
             {
-                string ipAddress = context.Connection.RemoteIpAddress.ToString();
                 if (context.WebSockets.IsWebSocketRequest)
                 {
                     using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
                     {
-                        CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+                        CancellationTokenSource cts = new(TimeSpan.FromMinutes(10));
+
+                        byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(_clientLogs));
+
+                        await webSocket.SendAsync(
+                            new ArraySegment<byte>(message, 0, message.Length),
+                            WebSocketMessageType.Text,
+                            endOfMessage: true,
+                            cts.Token);
 
                         while (!cts.IsCancellationRequested)
                         {
-                            byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(_clientLogs[ipAddress]));
-
-                            await webSocket.SendAsync(
-                                new ArraySegment<byte>(message, 0, message.Length),
-                                WebSocketMessageType.Text,
-                                endOfMessage: true,
-                                cts.Token);
-
                             await Task.Delay(TimeSpan.FromMinutes(5));
                         }
                     }
@@ -72,7 +71,7 @@ namespace LogApi
                 else
                 {
                     // TODO: Ignore browser favicon requests.
-                    _clientLogs.AddOrUpdate(ipAddress, new List<LogModel>(), (key, value) =>
+                    _clientLogs.AddOrUpdate(Guid.NewGuid().ToString(), new List<LogModel>(), (key, value) =>
                     {
                         if (value == null)
                         {
