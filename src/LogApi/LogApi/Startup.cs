@@ -38,6 +38,8 @@ namespace LogApi
                 KnownNetworks = { new IPNetwork(IPAddress.Parse("::ffff:172.17.0.1"), 104) }
             });
 
+            app.UseStaticFiles();
+
             app.Run(async context =>
             {
                 // TODO: Ignore browser favicon requests.
