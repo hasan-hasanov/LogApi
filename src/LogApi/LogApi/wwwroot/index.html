@@ -8,29 +8,51 @@
 
 <body>
     <script>
-        var webSocket = new WebSocket("wss://localhost:44389/");
-        var requests = [];
+        const webSocket = new WebSocket("wss://localhost:44389/");
 
         webSocket.onmessage = function (event) {
-            console.log(event.data);
-            requests.push(JSON.parse(event.data));
+            const requests = [];
+            const message = JSON.parse(event.data);
+
+            if (message.length > 1) {
+                requests.push(...message);
+            }
+            else {
+                requests.push(message);
+            }
+
+            const requestTable = document.getElementById("requestTable").getElementsByTagName('tbody')[0];
 
             for (var i = 0; i < requests.length; i++) {
-                const element = document.createTextNode(JSON.stringify(requests[i]));
-                const div = document.getElementById("root");
-                div.appendChild(element);
+                console.log(requests[i]);
+
+                const request = requests[i];
+                const row = requestTable.insertRow();
+
+                const pathCell = row.insertCell(0);
+                pathCell.innerHtml = "AAAAAAAAAAAAA";
+
+                const queryStringCell = row.insertCell(1);
+                queryStringCell.innerHtml = request.Path;
+
+                const headerCell = row.insertCell(2);
+                headerCell.innerHtml = request.Path;
+
+                const cookieCell = row.insertCell(3);
+                cookieCell.innerHtml = request.Path;
+
+                const bodyCell = row.insertCell(4);
+                bodyCell.innerHtml = request.Path;
             }
         }
 
     </script>
 
     <style>
-        /* Center tables for demo */
         table {
             margin: 0 auto;
         }
 
-        /* Default Table Style */
         table {
             color: #333;
             background: white;
@@ -56,50 +78,19 @@
             }
     </style>
 
-    <table>
+    <table id="requestTable">
         <caption>Table</caption>
         <thead>
             <tr>
-                <th>Column 1</th>
-                <th>Column 2</th>
-                <th>Column 3</th>
-                <th>Column 4</th>
-                <th>Column 5</th>
+                <th>Path</th>
+                <th>Query String</th>
+                <th>Headers</th>
+                <th>Cookies</th>
+                <th>Body</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Cell 1</td>
-                <td>Cell 2</td>
-                <td>Cell 3</td>
-                <td>Cell 4</td>
-                <td>Cell 5</td>
-            </tr>
-            <tr>
-                <td>Cell 6</td>
-                <td>Cell 7</td>
-                <td>Cell 8</td>
-                <td>Cell 9</td>
-                <td>Cell 10</td>
-            </tr>
-            <tr>
-                <td>Cell 11</td>
-                <td>Cell 12</td>
-                <td>Cell 13</td>
-                <td>Cell 14</td>
-                <td>Cell 15</td>
-            </tr>
         </tbody>
-        <tfoot>
-            <tr>
-                <th>Column 1</th>
-                <th>Column 2</th>
-                <th>Column 3</th>
-                <th>Column 4</th>
-                <th>Column 5</th>
-            </tr>
-        </tfoot>
     </table>
-    <div id="root"></div>
 </body>
 </html>

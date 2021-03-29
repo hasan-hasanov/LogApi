@@ -47,7 +47,7 @@ namespace LogApi
                         _webSockets.Add(webSocket);
                         CancellationTokenSource cts = new(TimeSpan.FromMinutes(10));
 
-                        byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(_clientLogs));
+                        byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(_clientLogs.Values));
 
                         await webSocket.SendAsync(
                             new ArraySegment<byte>(message, 0, message.Length),
