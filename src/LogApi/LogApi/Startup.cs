@@ -30,7 +30,7 @@ namespace LogApi
             services.AddHttpContextAccessor();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseHttpsRedirection();
             app.UseRouting();
@@ -59,7 +59,7 @@ namespace LogApi
                         {
                             while (!cts.IsCancellationRequested)
                             {
-                                await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
+                                await Task.Delay(TimeSpan.FromSeconds(100), cts.Token);
                             }
                         }
                         catch { }
@@ -71,7 +71,11 @@ namespace LogApi
                 }
                 else
                 {
-                    if (!context.Request.Path.HasValue && context.Request.Path.Value.Contains("favicon"))
+                    if (context.Request.Path.HasValue && context.Request.Path.Value.Contains("favicon"))
+                    {
+                        await context.Response.WriteAsync(string.Empty);
+                    }
+                    else
                     {
                         var logModel = new LogModel(
                                 context.Request.Path,

@@ -8,13 +8,98 @@
 
 <body>
     <script>
-        alert("hi");
-
         var webSocket = new WebSocket("wss://localhost:44389/");
+        var requests = [];
 
         webSocket.onmessage = function (event) {
             console.log(event.data);
+            requests.push(JSON.parse(event.data));
+
+            for (var i = 0; i < requests.length; i++) {
+                const element = document.createTextNode(JSON.stringify(requests[i]));
+                const div = document.getElementById("root");
+                div.appendChild(element);
+            }
         }
+
     </script>
+
+    <style>
+        /* Center tables for demo */
+        table {
+            margin: 0 auto;
+        }
+
+        /* Default Table Style */
+        table {
+            color: #333;
+            background: white;
+            border: 1px solid grey;
+            font-size: 12pt;
+            border-collapse: collapse;
+        }
+
+            table thead th,
+            table tfoot th {
+                color: #777;
+                background: rgba(0,0,0,.1);
+            }
+
+            table caption {
+                padding: .5em;
+            }
+
+            table th,
+            table td {
+                padding: .5em;
+                border: 1px solid lightgrey;
+            }
+    </style>
+
+    <table>
+        <caption>Table</caption>
+        <thead>
+            <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+                <th>Column 4</th>
+                <th>Column 5</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cell 1</td>
+                <td>Cell 2</td>
+                <td>Cell 3</td>
+                <td>Cell 4</td>
+                <td>Cell 5</td>
+            </tr>
+            <tr>
+                <td>Cell 6</td>
+                <td>Cell 7</td>
+                <td>Cell 8</td>
+                <td>Cell 9</td>
+                <td>Cell 10</td>
+            </tr>
+            <tr>
+                <td>Cell 11</td>
+                <td>Cell 12</td>
+                <td>Cell 13</td>
+                <td>Cell 14</td>
+                <td>Cell 15</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+                <th>Column 4</th>
+                <th>Column 5</th>
+            </tr>
+        </tfoot>
+    </table>
+    <div id="root"></div>
 </body>
 </html>
