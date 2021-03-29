@@ -25,7 +25,7 @@
 
             for (var i = 0; i < requests.length; i++) {
                 const request = requests[i];
-                const row = requestTable.insertRow();
+                const row = requestTable.insertRow(0);
 
                 const pathCell = row.insertCell(0);
                 pathCell.innerHTML = request.Path;
