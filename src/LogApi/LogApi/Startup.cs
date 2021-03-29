@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -37,14 +35,6 @@ namespace LogApi
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.All,
-                RequireHeaderSymmetry = false,
-                ForwardLimit = null,
-                KnownNetworks = { new IPNetwork(IPAddress.Parse("::ffff:172.17.0.1"), 104) }
-            });
-
             app.UseStaticFiles();
             app.UseWebSockets();
 
@@ -71,8 +61,6 @@ namespace LogApi
                             {
                                 await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
                             }
-
-
                         }
                         catch { }
                         finally
