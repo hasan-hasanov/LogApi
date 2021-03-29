@@ -71,8 +71,11 @@ namespace LogApi
                             {
                                 await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
                             }
+
+
                         }
-                        catch
+                        catch { }
+                        finally
                         {
                             _webSockets.Remove(webSocket);
                         }
@@ -80,35 +83,37 @@ namespace LogApi
                 }
                 else
                 {
-                    // TODO: Ignore browser favicon requests.
-                    var logModel = new LogModel(
-                            context.Request.Path,
-                            context.Request.QueryString.ToString(),
-                            context.Request.Headers.ToDictionary(k => k.Key, v => string.Join(", ", v.Value)),
-                            context.Request.Cookies.ToDictionary(k => k.Key, v => v.Value));
+                    if (!context.Request.Path.HasValue && context.Request.Path.Value.Contains("favicon"))
+                    {
+                        var logModel = new LogModel(
+                                context.Request.Path,
+                                context.Request.QueryString.ToString(),
+                                context.Request.Headers.ToDictionary(k => k.Key, v => string.Join(", ", v.Value)),
+                                context.Request.Cookies.ToDictionary(k => k.Key, v => v.Value));
 
-                    _clientLogs.AddOrUpdate(Guid.NewGuid().ToString(), logModel, (key, value) => logModel);
+                        _clientLogs.AddOrUpdate(Guid.NewGuid().ToString(), logModel, (key, value) => logModel);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    Task.Run(async () =>
-                    {
-                        foreach (var webSocket in _webSockets)
+                        Task.Run(async () =>
                         {
-                            if (webSocket.State == WebSocketState.Open)
+                            foreach (var webSocket in _webSockets)
                             {
-                                byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(logModel));
+                                if (webSocket.State == WebSocketState.Open)
+                                {
+                                    byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(logModel));
 
-                                await webSocket.SendAsync(
-                                    new ArraySegment<byte>(message, 0, message.Length),
-                                    WebSocketMessageType.Text,
-                                    endOfMessage: true,
-                                    CancellationToken.None);
+                                    await webSocket.SendAsync(
+                                        new ArraySegment<byte>(message, 0, message.Length),
+                                        WebSocketMessageType.Text,
+                                        endOfMessage: true,
+                                        CancellationToken.None);
+                                }
                             }
-                        }
-                    });
+                        });
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-                    await context.Response.WriteAsync("Success!");
+                        await context.Response.WriteAsync("Success!");
+                    }
                 }
             });
         }
