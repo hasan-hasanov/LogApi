@@ -8,7 +8,8 @@
 
 <body>
     <script>
-        const webSocket = new WebSocket("wss://localhost:44389/");
+        const url = `wss://${window.location.hostname}:${window.location.port}`
+        const webSocket = new WebSocket(url);
 
         webSocket.onmessage = function (event) {
             const requests = [];
