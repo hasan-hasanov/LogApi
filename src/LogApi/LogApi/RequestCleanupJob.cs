@@ -10,7 +10,9 @@ namespace LogApi
     public class RequestCleanupJob : IHostedService
     {
         private readonly CrontabSchedule _schedule;
+
         private DateTime _nextRun;
+        private CancellationTokenSource _cts;
 
         public RequestCleanupJob(IConfiguration configuration)
         {
@@ -20,7 +22,10 @@ namespace LogApi
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            // Link these tokens so if it is requested from ASP.NET we can honor this request in StartAsync and stop async.
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            while (!_cts.IsCancellationRequested)
             {
                 while (DateTime.Now > _nextRun)
                 {
@@ -35,7 +40,10 @@ namespace LogApi
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            _cts.Cancel();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return Task.CompletedTask;
         }
     }
 }
