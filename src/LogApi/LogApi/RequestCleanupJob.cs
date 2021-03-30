@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using NCrontab;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +14,7 @@ namespace LogApi
         private readonly CrontabSchedule _schedule;
         private readonly RequestContainer _requestContainer;
         private readonly int _requestCleanerInMinutes;
+        private readonly int _maximumRequestsToKeep;
 
         private DateTime _nextRun;
         private CancellationTokenSource _cts;
@@ -24,15 +27,13 @@ namespace LogApi
 
             _requestContainer = requestContainer;
             _requestCleanerInMinutes = int.Parse(configuration["RequestCleanerInMinutes"]);
+            _maximumRequestsToKeep = int.Parse(configuration["MaximumRequestsToKeep"]);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            // Link these tokens so if it is requested from ASP.NET we can honor this request in StartAsync and stop async.
             _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
             _executingTask = ExecuteAsync(_cts.Token);
-
             return _executingTask.IsCompleted ? _executingTask : Task.CompletedTask;
         }
 
@@ -54,7 +55,16 @@ namespace LogApi
             {
                 if (DateTime.Now > _nextRun)
                 {
-                    // Clean requests
+                    int deltaRequests = _requestContainer.ClientLogs.Count - _maximumRequestsToKeep;
+                    if (deltaRequests > 0)
+                    {
+                        List<string> keysToRemove = _requestContainer.ClientLogs.Keys.Where((key, index) => index < 5).ToList();
+                        foreach (var key in keysToRemove)
+                        {
+                            _requestContainer.ClientLogs.TryRemove(key, out _);
+                        }
+                    }
+
                     _nextRun = _schedule.GetNextOccurrence(DateTime.Now);
                 }
 
