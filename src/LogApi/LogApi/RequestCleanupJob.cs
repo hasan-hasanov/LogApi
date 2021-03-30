@@ -10,15 +10,20 @@ namespace LogApi
     public class RequestCleanupJob : IHostedService
     {
         private readonly CrontabSchedule _schedule;
+        private readonly RequestContainer _requestContainer;
+        private readonly int _requestCleanerInMinutes;
 
         private DateTime _nextRun;
         private CancellationTokenSource _cts;
         private Task _executingTask;
 
-        public RequestCleanupJob(IConfiguration configuration)
+        public RequestCleanupJob(IConfiguration configuration, RequestContainer requestContainer)
         {
             _schedule = CrontabSchedule.Parse($"*/{configuration["RequestCleanerInMinutes"]} * * * *");
             _nextRun = _schedule.GetNextOccurrence(DateTime.Now);
+
+            _requestContainer = requestContainer;
+            _requestCleanerInMinutes = int.Parse(configuration["RequestCleanerInMinutes"]);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -45,15 +50,15 @@ namespace LogApi
 
         protected async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            await Task.Delay(1);
-
-            while (!_cts.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                while (DateTime.Now > _nextRun)
+                if (DateTime.Now > _nextRun)
                 {
                     // Clean requests
                     _nextRun = _schedule.GetNextOccurrence(DateTime.Now);
                 }
+
+                await Task.Delay(TimeSpan.FromMinutes(_requestCleanerInMinutes));
             }
         }
     }
