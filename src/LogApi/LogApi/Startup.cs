@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Concurrent;
@@ -19,11 +20,20 @@ namespace LogApi
     {
         private readonly ConcurrentDictionary<string, LogModel> _clientLogs;
         private readonly IList<WebSocket> _webSockets;
+        private readonly IConfigurationRoot _configuration;
+        private readonly int _socketAliveMinutes;
 
-        public Startup()
+        public Startup(IConfiguration configuration)
         {
             _clientLogs = new ConcurrentDictionary<string, LogModel>();
             _webSockets = new List<WebSocket>();
+
+            _configuration = new ConfigurationBuilder()
+                .AddJsonFile("appSettings.json", optional: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            _socketAliveMinutes = int.Parse(_configuration["SocketAliveMinutes"]);
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -46,10 +56,9 @@ namespace LogApi
                     using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
                     {
                         _webSockets.Add(webSocket);
-                        CancellationTokenSource cts = new(TimeSpan.FromMinutes(10));
+                        CancellationTokenSource cts = new(TimeSpan.FromMinutes(_socketAliveMinutes));
 
                         byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(_clientLogs.Values));
-
                         await webSocket.SendAsync(
                             new ArraySegment<byte>(message, 0, message.Length),
                             WebSocketMessageType.Text,
@@ -60,7 +69,6 @@ namespace LogApi
                         {
                             while (!cts.IsCancellationRequested)
                             {
-                                await Task.Delay(TimeSpan.FromSeconds(100), cts.Token);
                             }
                         }
                         catch { }
@@ -79,7 +87,7 @@ namespace LogApi
                     else
                     {
                         string body = string.Empty;
-                        using (StreamReader stream = new StreamReader(context.Request.Body))
+                        using (StreamReader stream = new(context.Request.Body))
                         {
                             body = await stream.ReadToEndAsync();
                         }
@@ -101,7 +109,6 @@ namespace LogApi
                                 if (webSocket.State == WebSocketState.Open)
                                 {
                                     byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(logModel));
-
                                     await webSocket.SendAsync(
                                         new ArraySegment<byte>(message, 0, message.Length),
                                         WebSocketMessageType.Text,
