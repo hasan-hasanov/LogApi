@@ -23,7 +23,7 @@ namespace LogApi
         private readonly IConfigurationRoot _configuration;
         private readonly int _socketAliveMinutes;
 
-        public Startup(IConfiguration configuration)
+        public Startup()
         {
             _clientLogs = new ConcurrentDictionary<string, LogModel>();
             _webSockets = new List<WebSocket>();
@@ -39,6 +39,7 @@ namespace LogApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddHostedService<RequestCleanupJob>();
         }
 
         public void Configure(IApplicationBuilder app)
