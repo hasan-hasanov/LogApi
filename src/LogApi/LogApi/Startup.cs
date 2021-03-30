@@ -18,16 +18,11 @@ namespace LogApi
 {
     public class Startup
     {
-        private readonly ConcurrentDictionary<string, LogModel> _clientLogs;
-        private readonly IList<WebSocket> _webSockets;
         private readonly IConfigurationRoot _configuration;
         private readonly int _socketAliveMinutes;
 
         public Startup()
         {
-            _clientLogs = new ConcurrentDictionary<string, LogModel>();
-            _webSockets = new List<WebSocket>();
-
             _configuration = new ConfigurationBuilder()
                 .AddJsonFile("appSettings.json", optional: true)
                 .AddEnvironmentVariables()
@@ -40,6 +35,7 @@ namespace LogApi
         {
             services.AddHttpContextAccessor();
             services.AddHostedService<RequestCleanupJob>();
+            services.AddSingleton<RequestContainer>();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -52,14 +48,16 @@ namespace LogApi
 
             app.Run(async context =>
             {
+                var requestContainer = context.RequestServices.GetService<RequestContainer>();
+
                 if (context.WebSockets.IsWebSocketRequest)
                 {
                     using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
                     {
-                        _webSockets.Add(webSocket);
+                        requestContainer.WebSockets.Add(webSocket);
                         CancellationTokenSource cts = new(TimeSpan.FromMinutes(_socketAliveMinutes));
 
-                        byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(_clientLogs.Values));
+                        byte[] message = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(requestContainer.ClientLogs.Values));
                         await webSocket.SendAsync(
                             new ArraySegment<byte>(message, 0, message.Length),
                             WebSocketMessageType.Text,
@@ -68,14 +66,12 @@ namespace LogApi
 
                         try
                         {
-                            while (!cts.IsCancellationRequested)
-                            {
-                            }
+                            while (!cts.IsCancellationRequested) { }
                         }
                         catch { }
                         finally
                         {
-                            _webSockets.Remove(webSocket);
+                            requestContainer.WebSockets.Remove(webSocket);
                         }
                     }
                 }
@@ -100,12 +96,12 @@ namespace LogApi
                                 context.Request.Headers.ToDictionary(k => k.Key, v => string.Join(", ", v.Value)),
                                 context.Request.Cookies.ToDictionary(k => k.Key, v => v.Value));
 
-                        _clientLogs.AddOrUpdate(Guid.NewGuid().ToString(), logModel, (key, value) => logModel);
+                        requestContainer.ClientLogs.AddOrUpdate(Guid.NewGuid().ToString(), logModel, (key, value) => logModel);
 
 #pragma warning disable CS4014
                         Task.Run(async () =>
                         {
-                            foreach (var webSocket in _webSockets)
+                            foreach (var webSocket in requestContainer.WebSockets)
                             {
                                 if (webSocket.State == WebSocketState.Open)
                                 {
