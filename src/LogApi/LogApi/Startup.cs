@@ -32,9 +32,6 @@ namespace LogApi
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHttpsRedirection();
-            app.UseRouting();
-
             app.UseStaticFiles();
             app.UseWebSockets();
 

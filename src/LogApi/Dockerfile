@@ -1,6 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 WORKDIR /app
 
+EXPOSE 80 
+EXPOSE 443
+
 COPY /*.sln ./
 COPY LogApi/*.csproj ./LogApi/
 RUN dotnet restore
