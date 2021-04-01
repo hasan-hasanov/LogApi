@@ -68,7 +68,7 @@ namespace LogApi
                     _nextRun = _schedule.GetNextOccurrence(DateTime.Now);
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(_requestCleanerInMinutes));
+                await Task.Delay(TimeSpan.FromMinutes(_requestCleanerInMinutes), cancellationToken);
             }
         }
     }
