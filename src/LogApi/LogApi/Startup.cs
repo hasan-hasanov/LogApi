@@ -16,17 +16,11 @@ namespace LogApi
 {
     public class Startup
     {
-        private readonly IConfigurationRoot _configuration;
         private readonly int _socketAliveMinutes;
 
-        public Startup()
+        public Startup(IConfiguration configuration)
         {
-            _configuration = new ConfigurationBuilder()
-                .AddJsonFile("appSettings.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            _socketAliveMinutes = int.Parse(_configuration["SocketAliveMinutes"]);
+            _socketAliveMinutes = int.Parse(configuration["SocketAliveMinutes"]);
         }
 
         public void ConfigureServices(IServiceCollection services)
