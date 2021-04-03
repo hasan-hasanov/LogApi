@@ -12,9 +12,10 @@ The easiest way to use Log Api is with Docker.
 
 1. Run:
 ```
-Docker pull goes here
+docker pull hasanhasanov/log-api:latest
+docker run -p 8080:80 hasanhasanov/log-api:latest
 ```
-2. Open a browser and navigate to: http://localhost:5000/requests.html
+2. Open a browser and navigate to: http://localhost:8080/requests.html
 
 ### Dotnet
 
