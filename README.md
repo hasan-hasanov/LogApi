@@ -1,28 +1,36 @@
 # Log Api
 
-This is a very simple web api that displays the incomming requests. I recently needed something like this so I can debug my NodeMCU microcontroller. I wanted to see what I obtain and if I am able to send it somewhere.
+This is a very simple web api that displays the incomming requests. I recently needed something like this so I can debug my NodeMcu microcontroller. I wanted to see what I obtained and if I am able to send it somewhere.
 
 ![](assets/LogApi.gif)
 
 ## Installation 
 
-The easiest way to use Log Api is using Docker.
+The easiest way to use Log Api is with Docker.
 
 ### Docker:
 
+1. Run:
 ```
 Docker pull goes here
 ```
+2. Open a browser and navigate to: http://localhost:5000/requests.html
 
 ### Dotnet
 
+1. Clone or download the project
+2. Build using Release configuration
+3. Open cmd and navigate to LogApi\src\LogApi\LogApi\bin\Release\net5.0
+4. Run:
+
 ```
-Dotnet command goes here
+dotnet LogApi.dll
 ```
+5. Open a browser and navigate to: http://localhost:5000/requests.html
 
 ## Usage example
 
-You can make any request to the port that you setup the project. It will collect information about the request. You can then see this information realtime by navigating to the /requests.html page.
+You can make any request to the port that you setup the project. It will collect information about the request and you can then see this information realtime by navigating to the /requests.html page.
 
 ### Configs
 
