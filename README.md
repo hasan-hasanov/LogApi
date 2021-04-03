@@ -2,7 +2,7 @@
 
 This is a very simple web api that displays the incomming requests. I recently needed something like this so I can debug my NodeMCU microcontroller. I wanted to see what I obtain and if I am able to send it somewhere.
 
-![](header.png)
+![](assets/LogApi.gif)
 
 ## Installation 
 
@@ -36,8 +36,8 @@ You can override any of the configs by changing them in appSettings.json or thro
 
 ## Meta
 
-Hasan Hasanov – [@hmhasanov](https://twitter.com/hmhasanov)
-Blog - [Hasan Hasanov](https://hasan-hasanov.com/)
+* Hasan Hasanov – [@hmhasanov](https://twitter.com/hmhasanov)
+* Blog - [Hasan Hasanov](https://hasan-hasanov.com/)
 
 ## Contributing
 
