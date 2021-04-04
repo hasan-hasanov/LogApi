@@ -1,6 +1,6 @@
 # Log Api
 
-This is a very simple web api that displays the incomming requests. I recently needed something like this so I can debug my NodeMcu microcontroller. I wanted to see what I obtained and if I am able to send it somewhere.
+This is a very simple web api that displays the incoming requests. I recently needed something like this so I can debug my NodeMcu microcontroller. I wanted to see what I obtained and if I am able to send it somewhere.
 
 ![](assets/LogApi.gif)
 
